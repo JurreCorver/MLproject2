@@ -69,17 +69,21 @@ def readFileNumber(filename):
 def computeStats(yy):
     temp = []
     temp.append(yy.mean())
+    temp.append(yy.var())
     temp.append(yy.std())
     temp.append(np.median(yy))
-    temp.append(yy.max())
-    temp.append(yy.min())
     temp.append(stats.skew(yy))
     temp.append(stats.kurtosis(yy))
     temp.append(stats.moment(yy, 3))
     temp.append(stats.moment(yy, 4))
-
+    # temp.append(computeHist(yy))
     return (temp)
 
+def computeHist(yy, bins):
+    temp = []
+    xx = np.histogram(yy, bins=bins, density=True)
+    temp.append(xx[0])
+    return (np.reshape(temp,[-1, ]))
 
 def halfSplit(data):
     x1 = np.vsplit(data, 2)
@@ -95,6 +99,19 @@ def halfSplit(data):
             x3.append(temp[j])
     return x3
 
+def splitter3d(data, block):
+    x1 = np.vsplit(data, block)
+    x2 = []
+    x3 = []
+    for i in range(len(x1)):
+        temp = (np.hsplit(x1[i], block))
+        for j in range(len(temp)):
+            x2.append(temp[j])
+    for j in range(len(x2)):
+        temp = (np.dsplit(x2[j], block))
+        for j in range(len(temp)):
+            x3.append(temp[j])
+    return x3
 
 def blockDivision(data, level):
     if level == 0:
@@ -146,9 +163,18 @@ def statsFeature(data):
             features.append(tempFeature[j])
     return features
 
-def mriToFeature(fileDir):
+def histFeature(data, block, bins):
+    features = []
+    total = splitter3d(data, block)
+    for i in range(len(total)):
+        tempFeature = computeHist(np.reshape(total[i], [-1, ]), bins)
+        for j in range(len(tempFeature)):
+            features.append(tempFeature[j])
+    return features
+
+def mriToStatsFeature(fileDir):
     file, number = readFileDir(fileDir)
-    numberStats = 9
+    numberStats = 8
     numberBlock = 585
     features = np.zeros([number, numberStats*numberBlock])
     # get the MRI image
@@ -160,13 +186,39 @@ def mriToFeature(fileDir):
         d2 = np.reshape(imgData, [imgData.shape[0],imgData.shape[1],imgData.shape[2]])
         features[mriNumber - 1,:] = statsFeature(d2)
     return features
+
+def mriToHistFeature(fileDir, numberBins, block):
+    file, number = readFileDir(fileDir)
+    # numberBins = 64
+    numberBlock = block*block*block
+    features = np.zeros([number, numberBins*numberBlock])
+    # get the MRI imageL
+    for i in range(number):
+        filename = file[0,i]
+        mriNumber = readFileNumber(filename)
+        img = nib.load(fileDir + filename)
+        imgData = img.get_data()
+        d2 = np.reshape(imgData, [imgData.shape[0],imgData.shape[1],imgData.shape[2]])
+        features[mriNumber - 1,:] = histFeature(d2, block, numberBins)
+    return features
 # ---------------------------------------
 
 # set the directories
+# testDir = '../data/set_test/'
+# trainDir = '../data/set_train/'
+#
+# featureTest = mriToStatsFeature(testDir)
+# csvOutput('../testFeatureNew1.csv', featureTest)
+# featureTrain = mriToStatsFeature(trainDir)
+# csvOutput('../trainFeatureNew1.csv', featureTrain)
+
+# histogram feature
+bins = 64
+block = 8
 testDir = '../data/set_test/'
 trainDir = '../data/set_train/'
 
-featureTest = mriToFeature(testDir)
-csvOutput('../testFeatureNew.csv', featureTest)
-featureTrain = mriToFeature(trainDir)
-csvOutput('../trainFeatureNew.csv', featureTrain)
+featureTest = mriToHistFeature(testDir, bins, block)
+csvOutput('../testFeatureHistR.csv', featureTest)
+featureTrain = mriToHistFeature(trainDir, bins, block)
+csvOutput('../trainFeatureHistR.csv', featureTrain)
