@@ -2,14 +2,15 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import genfromtxt
-from sklearn import metrics
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
-
+from sklearn import metrics
+from sklearn.svm import SVC, NuSVC, LinearSVC
 
 # csv write a formated csv file
 def csvFormatedOutput(fileName, ans):
@@ -70,17 +71,19 @@ temp.append(genfromtxt(trainTarget, delimiter=','))
 trainingTemp = (listToMat(temp)).T
 temp = []
 for i in range(trainingTemp.shape[0]):
+    if trainingTemp[i] == 0:
+        trainingTemp[i] = -1
     temp.append(bin(int(trainingTemp[i])))
 trainingTargets = listToMat(temp).T
 
 # read the training features
-trainFeature = '../trainFeatureNew.csv'
+trainFeature = '../trainFeature.csv'
 temp = []
 temp.append(genfromtxt(trainFeature, delimiter=','))
 trainingFeatures = (listToMat(temp))
 
 # read the testing features
-testFeature = '../testFeatureNew.csv'
+testFeature = '../testFeature.csv'
 temp = []
 temp.append(genfromtxt(testFeature, delimiter=','))
 testingFeatures = (listToMat(temp))
@@ -88,6 +91,7 @@ testingFeatures = (listToMat(temp))
 X = trainingFeatures
 y = np.reshape(trainingTargets, [-1,])
 
+# print(trainingTargets)
 # lda
 # ldaParaGrid = {'solver': ['eigen'],
 #                'n_components': [1, 2],}
@@ -110,7 +114,7 @@ sgdBest = searchClassifier(sgd, sgdParaGrid,
                            trainingFeatures, trainingTargets)
 sgdPreTest, sgdProbTest = calibrationProb(sgdBest,
                                           trainingFeatures, trainingTargets, testingFeatures)
-csvFormatedOutput('../sgdBestNewPredictedProb.csv', sgdProbTest)
+csvFormatedOutput('../sgdBestHistRPredictedProb.csv', sgdProbTest)
 
 # # adaBoost + sgdBest
 # baseClassifier = sgdBest
@@ -124,12 +128,21 @@ csvFormatedOutput('../sgdBestNewPredictedProb.csv', sgdProbTest)
 # csvFormatedOutput('../adaSGDBestPredictedProb.csv', adaProbTest)
 
 # bagging + sgdBest
-baseClassifier = sgdBest
-baggingParaGrid = {'n_estimators': [10, 50, 100, 200]}
-bagging = BaggingClassifier(base_estimator=baseClassifier, max_features=1.0, max_samples=1.0)
-baggingBest = searchClassifier(bagging, baggingParaGrid, trainingFeatures, trainingTargets)
-baggingPreTest, baggingProbTest = calibrationProb(baggingBest,
-                                                  trainingFeatures, trainingTargets, testingFeatures)
-csvFormatedOutput('../baggingSGDBestNewPredictedProb.csv', baggingProbTest)
+# baseClassifier = sgdBest
+# baggingParaGrid = {'n_estimators': [10, 50, 100, 200]}
+# bagging = BaggingClassifier(base_estimator=baseClassifier, max_features=1.0, max_samples=1.0)
+# baggingBest = searchClassifier(bagging, baggingParaGrid, trainingFeatures, trainingTargets)
+# baggingPreTest, baggingProbTest = calibrationProb(baggingBest,
+#                                                   trainingFeatures, trainingTargets, testingFeatures)
+# csvFormatedOutput('../baggingSGDBestNew1PredictedProb.csv', baggingProbTest)
+
+# svm
+svcParaGrid = {'C':[1e-1,1e0,1e1,1e2,1e3,1e4,1e5],
+              'kernel': ['rbf','linear','poly','sigmoid'],
+              'degree': [3,4,5,6,7],
+              'gamma': [1e-2,1e-1,1e0,1e1,1e2,1e3,1e4,1e5]}
+svc = SVC(probability=True)
+svcBest = searchClassifier(svc, svcParaGrid, trainingFeatures, trainingTargets)
+svcProbTest = svcBest.predict_proba(testingFeatures)
 
 
