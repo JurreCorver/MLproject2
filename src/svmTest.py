@@ -73,7 +73,7 @@ temp = []
 for i in range(trainingTemp.shape[0]):
     if trainingTemp[i] == 0:
         trainingTemp[i] = -1
-    temp.append(bin(int(trainingTemp[i])))
+    temp.append((int(trainingTemp[i])))
 trainingTargets = listToMat(temp).T
 
 # read the training features
