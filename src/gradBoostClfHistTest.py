@@ -179,5 +179,5 @@ gradBoostBest = searchClassifier(gradBoost, gradBoostParaGrid,
                                 trainingFeatures, trainingTargets)
 gradBoostBest, gradBoostprobTest = calibrationProb(gradBoostBest, trainingFeatures, trainingTargets,
                                          testingFeatures)
-csvFormatedOutput('../graBoostBestHistRPredictedProb.csv', gradBoostprobTest)
+csvFormatedOutput('../graBoostBestHistPredictedProb.csv', gradBoostprobTest)
 
