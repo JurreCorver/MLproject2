@@ -128,7 +128,7 @@ def computeEpsAlp(yTrue, yTrainPred, initWeights):
     for i in range(len(yTrue)):
         if (yTrue[i] != yTrainPred[i]):
         	initWeights[i] = initWeights[i]*np.exp(alpha)
-    return epsilon, alpha, initWeights
+    return epsilon, alpha, initWeights/np.sum(initWeights)
 
 def adaBoost(sgdBase, numBoost, XTrain, yTrain):
     boostModel = []
@@ -197,7 +197,7 @@ X = trainingFeatures
 y = np.reshape(trainingTargets, [-1,])
 
 # sgd + adaboost
-numBoost = 2
+numBoost = 600
 # sgdBase = SGDClassifier(alpha=0.1, average=False, class_weight=None, epsilon=0.1,
 #        eta0=0.0, fit_intercept=True, l1_ratio=0.15,
 #        learning_rate='optimal', loss='squared_hinge', n_iter=1000,
