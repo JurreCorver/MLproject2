@@ -169,15 +169,15 @@ y = np.reshape(trainingTargets, [-1,])
 
 #gradient boosting classifier
 gradBoostParaGrid = {'loss': ['deviance', 'exponential'],
-                   'learning_rate': [0.0001,0.001,0.01,0.05,0.1,0.5,0.6,0.7,0.8,0.9,1],
-                   'n_estimators': [20,40,60,80,100,150,200],
-                   'criterion': ['friedman_mse', 'mse','mae'],
-                   'max_features':[None,'sqrt','log2']}
+                   'learning_rate': [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1],
+                   'n_estimators': [100,150,200],
+                   'criterion': ['friedman_mse'],
+                   'max_features':['sqrt']}
 
 gradBoost = GradientBoostingClassifier(max_depth=1)
 gradBoostBest = searchClassifier(gradBoost, gradBoostParaGrid,
                                 trainingFeatures, trainingTargets)
 gradBoostBest, gradBoostprobTest = calibrationProb(gradBoostBest, trainingFeatures, trainingTargets,
                                          testingFeatures)
-csvFormatedOutput('../graBoostBestHistPredictedProb.csv', gradBoostprobTest)
+csvFormatedOutput('../graBoostBestHist1PredictedProb.csv', gradBoostprobTest)
 
