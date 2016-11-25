@@ -124,7 +124,10 @@ def computeEpsAlp(yTrue, yTrainPred, initWeights):
         if (yTrue[i] != yTrainPred[i]):
             temp.append(initWeights[i])
     epsilon = np.sum(temp)/np.sum(initWeights)
-    alpha = np.log((1 - epsilon)/epsilon)
+    alpha = np.log((1 - epsilon)/(epsilon+1e-10))
+    for i in range(len(yTrue)):
+        if (yTrue[i] != yTrainPred[i]):
+        	initWeights[i] = initWeights[i]*np.exp(alpha)
     return epsilon, alpha, initWeights
 
 def adaBoost(sgdBase, numBoost, XTrain, yTrain):
@@ -179,16 +182,16 @@ for i in range(trainingTemp.shape[0]):
 trainingTargets = listToMat(temp).T
 
 # read the training features
-trainFeature = '../trainFeature.csv'
+trainFeature = '../trainFeatureHist.csv'
 temp = []
 temp.append(genfromtxt(trainFeature, delimiter=','))
-trainingFeatures = (listToMat(temp)).T
+trainingFeatures = (listToMat(temp))
 
 # read the testing features
-testFeature = '../testFeature.csv'
+testFeature = '../testFeatureHist.csv'
 temp = []
 temp.append(genfromtxt(testFeature, delimiter=','))
-testingFeatures = (listToMat(temp)).T
+testingFeatures = (listToMat(temp))
 
 X = trainingFeatures
 y = np.reshape(trainingTargets, [-1,])

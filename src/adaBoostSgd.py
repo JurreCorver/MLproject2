@@ -124,7 +124,10 @@ def computeEpsAlp(yTrue, yTrainPred, initWeights):
         if (yTrue[i] != yTrainPred[i]):
             temp.append(initWeights[i])
     epsilon = np.sum(temp)/np.sum(initWeights)
-    alpha = np.log((1 - epsilon)/epsilon)
+    alpha = np.log((1 - epsilon)/(epsilon+1e-10))
+    for i in range(len(yTrue)):
+        if (yTrue[i] != yTrainPred[i]):
+            initWeights[i] = initWeights[i]*np.exp(alpha)
     return epsilon, alpha, initWeights
 
 def adaBoost(sgdBase, numBoost, XTrain, yTrain):
