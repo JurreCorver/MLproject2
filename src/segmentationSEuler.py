@@ -80,16 +80,18 @@ train_dataFile_size = 278
 test_dataFile_size = 138
 
 
-for i in range(0,train_dataFile_size-1):
-    file_name_input = "../data/set_train/train_" + str(i+1) + ".nii"
-    # example_ni1 = os.path.join(data_path, file_name_input)
-    file_name_output = "../data/set_train_seg/train_" + str(i+1) + ".nii"
-    # save_example_ni1 = os.path.join(data_path, file_name_output)
-    image_segmentation(file_name_input,file_name_output, show_image=False)
+# for i in range(0,train_dataFile_size-1):
+i = 277
+file_name_input = "../data/set_train/train_" + str(i+1) + ".nii"
+# example_ni1 = os.path.join(data_path, file_name_input)
+file_name_output = "../data/set_train_seg/train_" + str(i+1) + ".nii"
+# save_example_ni1 = os.path.join(data_path, file_name_output)
+image_segmentation(file_name_input,file_name_output, show_image=False)
 
-for i in range(0,test_dataFile_size-1):
-    file_name_input = "../data/set_test/test_" + str(i+1) + ".nii"
-    # example_ni1 = os.path.join(data_path, file_name_input)
-    file_name_output = "../data/set_test_seg/test_" + str(i+1) + ".nii"
-    # save_example_ni1 = os.path.join(data_path, file_name_output)
-    image_segmentation(file_name_input,file_name_output, show_image=False)
+# for i in range(0,test_dataFile_size-1):
+i = 137
+file_name_input = "../data/set_test/test_" + str(i+1) + ".nii"
+# example_ni1 = os.path.join(data_path, file_name_input)
+file_name_output = "../data/set_test_seg/test_" + str(i+1) + ".nii"
+# save_example_ni1 = os.path.join(data_path, file_name_output)
+image_segmentation(file_name_input,file_name_output, show_image=False)
