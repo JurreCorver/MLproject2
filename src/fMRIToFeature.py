@@ -178,6 +178,15 @@ def histFeature(data, block, bins):
             features.append(tempFeature[j])
     return features
 
+def histRFeature(data, block, bins):
+    features = []
+    total = splitter3d(data, block)
+    for i in range(len(total)):
+        tempFeature = computeHistR(np.reshape(total[i], [-1, ]), bins)
+        for j in range(len(tempFeature)):
+            features.append(tempFeature[j])
+    return features
+
 def mriToStatsFeature(fileDir):
     file, number = readFileDir(fileDir)
     numberStats = 8
@@ -206,6 +215,21 @@ def mriToHistFeature(fileDir, numberBins, block):
         imgData = img.get_data()
         d2 = np.reshape(imgData, [imgData.shape[0],imgData.shape[1],imgData.shape[2]])
         features[mriNumber - 1,:] = histFeature(d2, block, numberBins)
+    return features
+
+def mriToHistRFeature(fileDir, numberBins, block):
+    file, number = readFileDir(fileDir)
+    # numberBins = 64
+    numberBlock = block*block*block
+    features = np.zeros([number, numberBins*numberBlock])
+    # get the MRI imageL
+    for i in range(number):
+        filename = file[0,i]
+        mriNumber = readFileNumber(filename)
+        img = nib.load(fileDir + filename)
+        imgData = img.get_data()
+        d2 = np.reshape(imgData, [imgData.shape[0],imgData.shape[1],imgData.shape[2]])
+        features[mriNumber - 1,:] = histRFeature(d2, block, numberBins)
     return features
 # ---------------------------------------
 
